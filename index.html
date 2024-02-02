@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elevadores</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: row; /* Organizar colunas horizontalmente */
+      align-items: center;
+    }
+
+    .elevador-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 10px; /* Adiciona um espaço entre as colunas */
+    }
+
+    .coluna {
+      display: flex;
+      flex-direction: column-reverse; /* Botões dispostos verticalmente, de baixo para cima */
+      align-items: center;
+    }
+
+    button {
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Elevadores</h2>
+
+  <div class="container">
+    <!-- Coluna e botões para chamar os elevadores em cada andar para o Elevador 1 (L1) -->
+    <div class="elevador-container" id="elevador-container-1">
+    </div>
+
+    <!-- Coluna e botões para chamar os elevadores em cada andar para o Elevador 2 (L2) -->
+    <div class="elevador-container" id="elevador-container-2">
+    </div>
+  </div>
+
+  <script>
+    const elevadores = [
+      Array(9).fill('S1'), // Elevador 1 (L1)
+      Array(9).fill('S1'), // Elevador 2 (L2)
+    ];
+
+    // Função para criar os botões de chamada para cada andar
+    function criarBotoes(containerId, elevadorIndex) {
+      const container = document.getElementById(containerId);
+      for (let andar = 8; andar >= 0; andar--) {
+        const botao = document.createElement('button');
+        botao.textContent = `Chamar ${andar}`;
+        botao.onclick = () => chamarElevador(andar, elevadorIndex);
+        container.appendChild(botao);
+      }
+    }
+
+    // Função para chamar o elevador
+    function chamarElevador(andar, elevadorIndex) {
+      const elevadorMaisProximo = encontrarElevadorMaisProximo(andar);
+      moverElevador(elevadorMaisProximo, andar, elevadorIndex);
+      atualizarInterface();
+    }
+
+    function encontrarElevadorMaisProximo(andar) {
+      const posicaoElevador1 = elevadores[0].indexOf('E');
+      const posicaoElevador2 = elevadores[1].indexOf('E');
+
+      const distancia1 = Math.abs(posicaoElevador1 - andar);
+      const distancia2 = Math.abs(posicaoElevador2 - andar);
+
+      return distancia1 <= distancia2 ? 0 : 1;
+    }
+
+    function moverElevador(numeroElevador, andar, elevadorIndex) {
+      elevadores[numeroElevador] = Array(9).fill('').map((_, index) => index === andar ? 'E' : '');
+    }
+
+    function atualizarInterface() {
+      // Limpa os containers existentes
+      document.getElementById('elevador-container-1').innerHTML = '';
+      document.getElementById('elevador-container-2').innerHTML = '';
+
+      // Cria os botões para cada elevador
+      criarBotoes('elevador-container-1', 0);
+      criarBotoes('elevador-container-2', 1);
+
+      // Atualiza a representação gráfica dos elevadores
+      const container1 = document.getElementById('elevador-container-1');
+      const coluna1 = document.createElement('div');
+      coluna1.className = 'coluna';
+      coluna1.innerHTML = `<strong>L1</strong>: ${elevadores[0].join(' | ')}`;
+      container1.appendChild(coluna1);
+
+      const container2 = document.getElementById('elevador-container-2');
+      const coluna2 = document.createElement('div');
+      coluna2.className = 'coluna';
+      coluna2.innerHTML = `<strong>L2</strong>: ${elevadores[1].join(' | ')}`;
+      container2.appendChild(coluna2);
+    }
+
+    // Inicializa a interface
+    atualizarInterface();
+  </script>
+</body>
+</html>
